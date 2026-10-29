@@ -1,0 +1,36 @@
+# Python virtual environments
+.venv/
+venv/
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local databases and SQLite files
+news.db
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Local backups and temporary versions
+*.backup
+*.before_*
+
+# Local secrets and environment settings
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.DS_Store
+.vscode/
+.idea/
+
+# Test and coverage artifacts
+.coverage
+htmlcov/
+.pytest_cache/
