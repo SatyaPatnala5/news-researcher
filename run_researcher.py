@@ -2,22 +2,31 @@
 import argparse
 
 from news_fetcher import fetch_headlines
-from news_database import save_stories, get_stories
+from news_database import (
+    save_stories,
+    get_stories,
+    print_source_health,
+    cleanup_source_health_history,
+)
 
 
 def choose_mode():
     print("\nChoose what you want to do:")
     print("1. Get latest headlines")
     print("2. Browse previously saved stories")
+    print("3. View news source health")
 
     while True:
-        choice = input("Enter 1 or 2 [1]: ").strip() or "1"
+        choice = input("Enter 1, 2, or 3 [1]: ").strip() or "1"
+
         if choice == "1":
             return "latest"
         if choice == "2":
             return "saved"
-        print("Please enter 1 or 2.")
+        if choice == "3":
+            return "health"
 
+        print("Please enter 1, 2, or 3.")
 
 def choose_region():
     print("\nChoose news coverage:")
@@ -83,10 +92,20 @@ def main():
     args = parser.parse_args()
 
     print("\n=== News Researcher ===")
+    deleted_count = cleanup_source_health_history(30)
+
+    if deleted_count > 0:
+        print(f"Cleaned up {deleted_count} old health-history records.")
 
     mode = choose_mode()
+
+    if mode == "health":
+        print_source_health()
+        return
+
     region = choose_region()
     story_count = choose_story_count()
+
 
     print(f"\nMode: {'Latest headlines' if mode == 'latest' else 'Saved stories'}")
     print(f"Coverage: {region}")
@@ -100,6 +119,7 @@ def main():
             print(f"Could not fetch headlines: {error}")
             return
 
+        fetched_count = len(stories)
         new_count = save_stories(stories)
 
         if args.category:
@@ -110,7 +130,7 @@ def main():
 
         stories = stories[:story_count]
 
-        print(f"Headlines fetched: {len(stories)}")
+        print(f"Headlines fetched: {fetched_count}")
         print(f"New stories saved: {new_count}")
         print(f"Stories displayed: {len(stories)}")
         print("\n=== Latest Headlines ===")

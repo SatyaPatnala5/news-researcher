@@ -8,6 +8,7 @@ import feedparser
 
 from news_sources import NEWS_SOURCES
 from news_classifier import classify_headline
+from news_database import record_source_health
 
 
 def fetch_headlines(limit=10, region=None):
@@ -50,8 +51,20 @@ def fetch_headlines(limit=10, region=None):
                 })
 
         except (urllib.error.URLError, TimeoutError, OSError, ValueError) as error:
+            record_source_health(
+                source["name"],
+                "FAILED",
+                error_message=str(error),
+            )
             print(f"Warning: Could not fetch {source['name']}: {error}")
             continue
+
+        status = "OK" if headlines else "EMPTY"
+        record_source_health(
+            source["name"],
+            status,
+            headlines_count=len(headlines),
+        )
 
         source_headlines.append(headlines)
 
