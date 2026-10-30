@@ -22,6 +22,12 @@ class TestNewsFetcher(unittest.TestCase):
         self.source_patch.start()
         self.addCleanup(self.source_patch.stop)
 
+        self.health_patch = patch.object(
+            news_fetcher, "record_source_health"
+        )
+        self.health_patch.start()
+        self.addCleanup(self.health_patch.stop)
+
         self.response = MagicMock()
         self.response.__enter__.return_value = self.response
         self.response.read.return_value = b"fake RSS data"

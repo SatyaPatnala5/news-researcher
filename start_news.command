@@ -1,4 +1,4 @@
 #!/bin/zsh
-cd "$HOME/news-researcher"
+cd "$(dirname "$0")"
 source .venv/bin/activate
 streamlit run app.py
