@@ -79,6 +79,145 @@ class TestNewsDatabase(unittest.TestCase):
         self.assertEqual(stories[0]["region"], "India")
         self.assertEqual(stories[0]["category"], "Technology")
 
+    def test_stories_can_be_searched_by_keyword(self):
+        stories = [
+            {
+                **self.story,
+                "link": "https://example.com/tech",
+                "title": "Cybersecurity update",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/sports",
+                "title": "Cricket match results",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/ai",
+                "title": "New AI model",
+            },
+        ]
+
+        news_database.save_stories(stories)
+
+        results = news_database.get_stories(
+            10, keyword="cybersecurity"
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["title"], "Cybersecurity update")
+
+
+    def test_stories_can_be_filtered_by_source(self):
+        stories = [
+            {
+                **self.story,
+                "link": "https://example.com/bbc",
+                "title": "BBC headline",
+                "source": "BBC News",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/ndtv",
+                "title": "NDTV headline",
+                "source": "NDTV",
+            },
+        ]
+
+        news_database.save_stories(stories)
+
+        results = news_database.get_stories(
+            10, source="BBC News"
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["source"], "BBC News")
+        self.assertEqual(results[0]["title"], "BBC headline")
+
+    def test_stories_can_be_filtered_by_region(self):
+        stories = [
+            {
+                **self.story,
+                "link": "https://example.com/india",
+                "title": "India headline",
+                "region": "India",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/global",
+                "title": "Global headline",
+                "region": "Global",
+            },
+        ]
+
+        news_database.save_stories(stories)
+
+        results = news_database.get_stories(
+            10, region="India"
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["region"], "India")
+        self.assertEqual(results[0]["title"], "India headline")
+
+    def test_stories_can_be_filtered_by_date_range(self):
+        stories = [
+            {
+                **self.story,
+                "link": "https://example.com/older",
+                "title": "Older headline",
+                "published": "Mon, 19 Oct 2026 10:00:00 +0000",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/within",
+                "title": "Headline within range",
+                "published": "Wed, 21 Oct 2026 10:00:00 +0000",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/newer",
+                "title": "Newer headline",
+                "published": "Fri, 23 Oct 2026 10:00:00 +0000",
+            },
+        ]
+
+        news_database.save_stories(stories)
+
+        results = news_database.get_stories(
+            10,
+            start_date="2026-10-20",
+            end_date="2026-10-22",
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["title"], "Headline within range")
+
+    def test_stories_can_be_sorted_oldest_first(self):
+        stories = [
+            {
+                **self.story,
+                "link": "https://example.com/old",
+                "title": "Oldest headline",
+                "published": "Mon, 19 Oct 2026 10:00:00 +0000",
+            },
+            {
+                **self.story,
+                "link": "https://example.com/new",
+                "title": "Newest headline",
+                "published": "Wed, 21 Oct 2026 10:00:00 +0000",
+            },
+        ]
+
+        news_database.save_stories(stories)
+
+        results = news_database.get_stories(
+            10, sort_order="oldest"
+        )
+
+        self.assertEqual(results[0]["title"], "Oldest headline")
+        self.assertEqual(results[1]["title"], "Newest headline")
+
     def test_stories_can_be_filtered_by_category(self):
         stories = [
             {

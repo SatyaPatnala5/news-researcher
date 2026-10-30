@@ -113,28 +113,78 @@ def save_stories(stories):
     return saved_count
 
 
-def get_stories(limit=20, category=None):
-    """Retrieve stories ordered by publication date, newest first."""
+
+
+def get_stories(
+    limit=20,
+    category=None,
+    keyword=None,
+    source=None,
+    region=None,
+    start_date=None,
+    end_date=None,
+    sort_order="newest",
+):
+    """Retrieve stories with optional category, keyword, and source filters."""
     from email.utils import parsedate_to_datetime
 
     initialize_database()
 
+    query = """
+        SELECT title, source, published, url, saved_at, saved_by,
+               region, category
+        FROM stories
+        WHERE 1=1
+    """
+    parameters = []
+
+    if category:
+        query += " AND category = ?"
+        parameters.append(category)
+
+    if keyword:
+        query += " AND title LIKE ? COLLATE NOCASE"
+        parameters.append(f"%{keyword}%")
+
+    if source:
+        query += " AND source = ?"
+        parameters.append(source)
+        
+    if region:
+        query += " AND region = ?"
+        parameters.append(region)
+
     with get_connection() as connection:
-        if category is None:
-            rows = connection.execute("""
-                SELECT title, source, published, url, saved_at, saved_by,
-                       region, category
-                FROM stories
-            """).fetchall()
-        else:
-            rows = connection.execute("""
-                SELECT title, source, published, url, saved_at, saved_by,
-                       region, category
-                FROM stories
-                WHERE category = ?
-            """, (category,)).fetchall()
+        rows = connection.execute(query, parameters).fetchall()
 
     stories = [dict(row) for row in rows]
+    if start_date or end_date:
+        filtered_stories = []
+
+        for story in stories:
+            published = story.get("published") or ""
+
+            try:
+                parsed = parsedate_to_datetime(published)
+
+                if parsed is None:
+                    continue
+
+                story_date = parsed.date().isoformat()
+
+                if start_date and story_date < start_date:
+                    continue
+
+                if end_date and story_date > end_date:
+                    continue
+
+                filtered_stories.append(story)
+
+            except (TypeError, ValueError, OverflowError):
+                continue
+
+        stories = filtered_stories
+        
 
     def publication_time(story):
         published = story.get("published") or ""
@@ -150,9 +200,19 @@ def get_stories(limit=20, category=None):
         except (TypeError, ValueError, OverflowError):
             return float("-inf")
 
-    stories.sort(key=publication_time, reverse=True)
+    if sort_order not in ("newest", "oldest"):
+        raise ValueError("sort_order must be 'newest' or 'oldest'")
+
+    stories.sort(
+        key=lambda story: (
+            publication_time(story) == float("-inf"),
+            publication_time(story),
+        ),
+        reverse=(sort_order == "newest"),
+    )
 
     return stories[:limit]
+
 
 
 def get_database_stats():
