@@ -18,24 +18,30 @@ The project is also an exercise in practical software engineering: source tracea
 - Classify headlines using a keyword-based classifier.
 - Store stories in a local SQLite database.
 - Prevent duplicate stories using their article URLs.
-- Order stories by publication date, newest first.
+- Order stories by publication date.
 - Retain up to 5,000 stories, removing older records in batches.
 
 ### Browser dashboard
+
 The application includes a Streamlit dashboard with three sections:
 
-1. **Get Latest Headlines** — fetch headlines and save new stories.
-2. **Browse Saved Stories** — view previously collected headlines and their source, region, category, publication date, and original article link.
+1. **Get Latest Headlines** — fetch fresh headlines from configured sources and save new stories.
+2. **Browse Saved Stories** — browse previously collected headlines, including their source, region, category, publication date, and original article link.
 3. **Source Health** — view the latest recorded status of configured RSS sources.
 
-The dashboard currently provides basic browsing. Search and advanced archive filters are planned improvements.
+The saved-story archive supports:
+- Keyword search across headlines.
+- Filtering by region, category, and source.
+- Filtering by publication date range.
+- Sorting by newest or oldest first.
+- A **Clear All Filters** option to restore the default view.
 
 ### Terminal application
 The original interactive Python application is retained and can still be run from Terminal.
 
 ### Testing
 - Automated unit tests for classification, database operations, and RSS fetching.
-- Tests can be run locally using Python's unittest framework.
+- Tests can be run locally using Python's `unittest` framework.
 
 ## Technology
 
@@ -75,7 +81,7 @@ Install the application dependencies:
 python -m pip install -r requirements.txt
 ```
 
-This installs the dependencies required by the browser dashboard and the RSS collection backend.
+This installs the dependencies required by the browser dashboard and RSS collection backend.
 
 ## Running the browser dashboard
 
@@ -83,9 +89,7 @@ This installs the dependencies required by the browser dashboard and the RSS col
 
 Open the `news-researcher` folder in Finder and double-click:
 
-```text
-start_news.command
-```
+`start_news.command`
 
 The launcher activates the project's virtual environment and starts Streamlit. Your browser should open the dashboard automatically.
 
@@ -102,17 +106,13 @@ streamlit run app.py
 
 Open the local URL displayed by Streamlit, usually:
 
-```text
-http://localhost:8501
-```
+`http://localhost:8501`
 
 Keep the Terminal process running while using the dashboard.
 
 To stop the application, return to the Terminal window running Streamlit and press:
 
-```text
-Control + C
-```
+`Control + C`
 
 Closing the browser tab alone does not stop the Streamlit server.
 
@@ -171,9 +171,9 @@ python -m unittest discover -s tests -v
 
 ## Future improvements
 
-Potential next steps include:
+Potential future enhancements include:
 
-- Search saved headlines by keyword.
-- Filter the archive by source, region, category, and date.
-- Improve the dashboard's browsing and navigation experience.
-- Add optional AI-assisted research capabilities.
+- More flexible source management.
+- Improved headline classification.
+- Optional AI-assisted research capabilities.
+- Easier installation and distribution for other Mac users.
