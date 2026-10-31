@@ -37,6 +37,7 @@ The saved-story archive supports:
 - A **Clear All Filters** option to restore the default view.
 
 ### Terminal application
+
 The original interactive Python application is retained and can still be run from Terminal.
 
 ### Testing
@@ -54,11 +55,15 @@ The original interactive Python application is retained and can still be run fro
 
 ## Requirements
 
-- Python 3
-- Internet access for retrieving RSS feeds
-- macOS for the supplied double-click launcher
+- Python 3 installed on macOS.
+- Internet access for retrieving RSS feeds.
+- macOS for the supplied double-click launcher.
+
+The setup script checks for Python 3 and creates the application's virtual environment. It does not install Python itself.
 
 ## Installation on macOS
+
+### Step 1: Download the application
 
 Open Terminal and run:
 
@@ -68,20 +73,34 @@ git clone https://github.com/SatyaPatnala5/news-researcher.git
 cd news-researcher
 ```
 
-Create and activate a virtual environment:
+### Step 2: Install the application
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+Open the `news-researcher` folder in Finder.
 
-Install the application dependencies:
+Double-click:
 
-```bash
-python -m pip install -r requirements.txt
-```
+`setup_news.command`
 
-This installs the dependencies required by the browser dashboard and RSS collection backend.
+The setup script will:
+- Check whether Python 3 is installed.
+- Create the application's virtual environment if it does not already exist.
+- Install the required application dependencies.
+
+Wait until the setup displays:
+
+`SETUP COMPLETED SUCCESSFULLY`
+
+If Python 3 is not installed, install it and run the setup script again.
+
+### Step 3: Start the application
+
+Double-click:
+
+`start_news.command`
+
+Your browser should open the News Researcher dashboard automatically.
+
+If macOS displays a security warning, check the file and its origin before allowing it to run.
 
 ## Running the browser dashboard
 
@@ -92,8 +111,6 @@ Open the `news-researcher` folder in Finder and double-click:
 `start_news.command`
 
 The launcher activates the project's virtual environment and starts Streamlit. Your browser should open the dashboard automatically.
-
-If macOS displays a security warning, check the file and its origin before allowing it to run.
 
 ### Option 2: Run from Terminal
 
